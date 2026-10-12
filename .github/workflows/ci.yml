@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    name: Lint, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.0'
+
+      - uses: extractions/setup-just@v3
+
+      - name: Install tools
+        run: just install-tools
+
+      - name: Check formatting
+        run: just fmt-check
+
+      - name: Lint
+        run: just lint
+
+      - name: Lint js/wasm
+        run: just lint-wasm
+
+      - name: Test
+        run: just test
+
+      - name: Fuzz
+        run: just fuzz 30s
